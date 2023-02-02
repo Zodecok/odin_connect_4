@@ -34,9 +34,10 @@ describe ConnectFour do
 
     before(:example) do
       @connect = ConnectFour.new
+    end
 
 
-    xit "piece is added to board at correct location" do
+    it "piece is added to board at correct location" do
       @connect.turn(0)
       expect(@connect.board).to eql([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
@@ -46,7 +47,7 @@ describe ConnectFour do
         [:⚫, :_, :_, :_, :_, :_, :_]])
     end
 
-    xit "piece changes to white for the second player's move" do
+    it "piece changes to white for the second player's move" do
       @connect.turn(0)
       @connect.turn(2)
       expect(@connect.board).to eql([[:_, :_, :_, :_, :_, :_, :_],                                                                      
@@ -57,7 +58,7 @@ describe ConnectFour do
         [:⚫, :_, :⚪, :_, :_, :_, :_]])
     end
 
-    xit "piece stacks on another if space below it is filled" do
+    it "piece stacks on another if space below it is filled" do
       @connect.turn(0)
       @connect.turn(0)
       expect(@connect.board).to eql([[:_, :_, :_, :_, :_, :_, :_],                                                                      
@@ -68,18 +69,18 @@ describe ConnectFour do
         [:⚫, :_, :_, :_, :_, :_, :_]])
     end
 
-    xit "throws error when column index is out of range" do
-      expect { @connect.turn(10) }.to raise_error(StandardError::OutOfBoundsError)
+    it "throws error when column index is out of range" do
+      expect { @connect.turn(10) }.to raise_error(OutOfBoundsError)
     end
 
-    xit "throws error when column is too high" do
+    it "throws error when column is too high" do
       6.times { @connect.turn(1) }
-      expect { @connect.turn(1) }.to raise_error(StandardError::OutOfBoundsError)
+      expect { @connect.turn(1) }.to raise_error(OutOfBoundsError)
     end
   end
 
   describe "#game_over?" do
-    xit "returns false when the game isn't won" do
+    it "returns false when the game isn't won" do
       connect = ConnectFour.new
       expect(connect.game_over?).to eql(false)
     end
@@ -90,7 +91,7 @@ describe ConnectFour do
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :⚫, :_, :_, :_, :_],                                                                      
-        [:⚫, :⚪, :⚪, :⚪, :⚪, :_, :_]])
+        [:⚫, :⚪, :⚪, :⚪, :⚪, :_, :_]], [5,1])
       expect(connect.game_over?).to eql(true)
     end
 
@@ -100,27 +101,27 @@ describe ConnectFour do
         [:⚫, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :⚫, :⚪, :_, :_, :_],                                                                      
-        [:⚫, :⚪, :⚪, :⚪, :_, :_, :_]])
+        [:⚫, :⚪, :⚪, :⚪, :_, :_, :_]], [2,0])
       expect(connect.game_over?).to eql(true)
     end
 
-    xit "returns true when a left diagonal win" do
+    it "returns true when a left diagonal win" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚪, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :⚪, :_, :_, :_, :_, :_],                                                                      
         [:⚪, :⚫, :⚪, :_, :_, :_, :_],                                                                      
-        [:⚫, :⚫, :⚫, :⚪, :_, :_, :_]])
+        [:⚫, :⚫, :⚫, :⚪, :_, :_, :_]], [5,3])
       expect(connect.game_over?).to eql(true)
     end
 
-    xit "returns true when a right diagonal win" do
+    it "returns true when a right diagonal win" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :⚫],                                                                      
         [:_, :_, :_, :_, :_, :⚫, :⚪],                                                                      
         [:_, :_, :_, :_, :⚫, :⚪, :⚫],                                                                      
-        [:_, :_, :⚫, :⚫, :⚪, :⚪, :⚪]])
+        [:_, :_, :⚫, :⚫, :⚪, :⚪, :⚪]], [2,6])
       expect(connect.game_over?).to eql(true)
     end
   end
