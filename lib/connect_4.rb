@@ -26,29 +26,22 @@ class ConnectFour
     player_token = self.players_turn
 
     @board[@last_move[0]][@last_move[1]] = player_token
-    
-
-    # raise GameOver.new if self.game_over?
+    raise GameOver.new if self.game_over?
   end
 
   def winner
-    player_token = self.players_turn
-    return nil if @last_move == nil 
-
-    diagonal(@last_move, player_token)
-
-
-
+    player_token = self.last_players_turn
+    return nil if @last_move == nil
+    return player_token if match(@last_move, player_token) == true
   end
-
-  
-
-
 
   def game_over?
     self.num_rounds == MAX_ROUNDS || self.winner != nil
   end
 
+  def reset
+    @board = Array.new(6) { Array.new(7, :_) }
+  end
 
   private
   def num_rounds
@@ -59,35 +52,59 @@ class ConnectFour
     self.num_rounds.even? ? player = PLAYER_ONE_TOKEN : player = PLAYER_TWO_TOKEN
   end
 
-  def diagonal(location, player_token, direction_of_former = nil)
+  def last_players_turn
+    self.num_rounds.even? ? player = PLAYER_TWO_TOKEN : player = PLAYER_ONE_TOKEN
+  end
+
+  def match(location, player_token, direction_heading = nil)
+    # binding.pry
     return 0 unless location[0].between?(0, HEIGHT - 1) && location[1].between?(0, WIDTH - 1)
 
     token_at_location = @board[location[0]][location[1]]
     return 0 unless token_at_location == player_token
 
-    case direction_of_former
+    case direction_heading
     when nil
-      right_diagonal = 1 + diagonal([location[0] - 1, location[1] + 1], player_token, :right_above) + 
-      diagonal([location[0] + 1, location[1] - 1], player_token, :left_below)
+      right_diagonal = 1 + match([location[0] - 1, location[1] + 1], player_token, :right_above) + 
+      match([location[0] + 1, location[1] - 1], player_token, :left_below)
+      return true if right_diagonal >= NUM_TO_WIN
 
-      left_diagonal = 1 + diagonal([location[0] - 1, location[1] - 1], player_token, :left_above) +
-      diagonal([location[0] + 1, location[1] + 1], player_token, :right_below)
+      left_diagonal = 1 + match([location[0] - 1, location[1] - 1], player_token, :left_above) +
+      match([location[0] + 1, location[1] + 1], player_token, :right_below)
+      return true if left_diagonal >= NUM_TO_WIN
 
-      return right_diagonal >= NUM_TO_WIN || left_diagonal >= NUM_TO_WIN
+      horizontal = 1 + match([location[0], location[1] - 1], player_token, :left) +
+      match([location[0], location[1] + 1], player_token, :right)
+      return true if horizontal >= NUM_TO_WIN
+
+      vertical = 1 + match([location[0] - 1, location[1]], player_token, :above) + 
+      match([location[0] + 1, location[1]], player_token, :below)
+      return true if vertical >= NUM_TO_WIN
+
+      return false
 
     when :right_above
-      return 1 + diagonal([location[0] - 1, location[1] + 1], player_token, :right_above)
+      return 1 + match([location[0] - 1, location[1] + 1], player_token, :right_above)
     when :left_below
-      return 1 + diagonal([location[0] + 1, location[1] - 1], player_token, :left_below)
+      return 1 + match([location[0] + 1, location[1] - 1], player_token, :left_below)
     when :left_above
-      return 1 + diagonal([location[0] - 1, location[1] - 1], player_token, :left_above)
+      return 1 + match([location[0] - 1, location[1] - 1], player_token, :left_above)
     when :right_below
-      return 1 + diagonal([location[0] + 1, location[1] + 1], player_token, :right_below)
+      return 1 + match([location[0] + 1, location[1] + 1], player_token, :right_below)
+    when :left
+      return 1 + match([location[0], location[1] - 1], player_token, :left)
+    when :right
+      return 1 + match([location[0], location[1] + 1], player_token, :right)
+    when :above
+      return 1 + match([location[0] - 1, location[1]], player_token, :above)
+    when :below
+      return 1 + match([location[0] + 1, location[1]], player_token, :below)
     end
   end
 
 
 end
+
 
 class OutOfBoundsError < StandardError
 end

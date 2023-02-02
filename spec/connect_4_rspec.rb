@@ -85,7 +85,7 @@ describe ConnectFour do
       expect(connect.game_over?).to eql(false)
     end
 
-    xit "returns true when a horizontal win" do
+    it "returns true when a horizontal win" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
@@ -95,7 +95,7 @@ describe ConnectFour do
       expect(connect.game_over?).to eql(true)
     end
 
-    xit "returns true when a vertical win" do
+    it "returns true when a vertical win" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :_, :_, :_, :_, :_],                                                                      
@@ -127,7 +127,7 @@ describe ConnectFour do
   end
 
   describe "winner" do
-    xit "returns nil when no winner" do 
+    it "returns nil when no winner" do 
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
@@ -137,28 +137,28 @@ describe ConnectFour do
       expect(connect.winner).to eql(nil)
     end
 
-    xit "returns white token when player two wins" do
+    it "returns white token when player two wins" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚪, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :⚪, :_, :_, :_, :_, :_],                                                                      
         [:⚪, :⚫, :⚪, :_, :_, :_, :_],                                                                      
-        [:⚫, :⚫, :⚫, :⚪, :_, :_, :_]])
+        [:⚫, :⚫, :⚫, :⚪, :_, :_, :_]], [5,3])
       expect(connect.winner).to eql(:⚪)
     end
 
-    xit "returns black token when player one wins" do
+    it "returns black token when player one wins" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :_, :_, :_, :_, :_],                                                                      
         [:⚫, :_, :⚫, :⚪, :_, :_, :_],                                                                      
-        [:⚫, :⚪, :⚪, :⚪, :_, :_, :_]])
+        [:⚫, :⚪, :⚪, :⚪, :_, :_, :_]], [2,0])
       expect(connect.winner).to eql(:⚫)
     end
 
   describe "#reset" do
-    xit "resests board to original" do
+    it "resests board to original" do
       connect = ConnectFour.new([[:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :_],                                                                      
         [:_, :_, :_, :_, :_, :_, :⚫],                                                                      
