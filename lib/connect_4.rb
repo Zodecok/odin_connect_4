@@ -101,9 +101,68 @@ class ConnectFour
       return 1 + match([location[0] + 1, location[1]], player_token, :below)
     end
   end
+end
 
+class Controller
+
+  def main(connect_4 = ConnectFour.new)
+    display = Display.new
+    display.greeting
+
+    game_over_error_raised = false
+    until game_over_error_raised
+      begin
+        display.write_board(connect_4.board)
+        column = display.get_input("Enter column for go").to_i
+        connect_4.turn(column)
+      rescue GameOver => exception
+        display.write_board(connect_4.board)
+        game_over_error_raised = true
+      end
+    end
+
+    winner_token = connect_4.winner
+    display.write_message("The winner was #{winner_token.to_s}")
+    self.main if display.get_input("Press 'y' to play again") == 'y'
+
+  end
 
 end
+
+class Display
+
+  def write_board(board)
+    text = "\n"
+    board.each do |row|
+      indent = ""
+      row.each do |element|
+        text += indent + element.to_s
+        indent = "\t"
+      end
+      text += "\n\n"
+    end
+    text += "0\t1\t2\t3\t4\t5\t6\n"
+    puts text
+  end
+
+  def greeting
+    message = "Welcome to connect 4, this is a normal connect four"
+    message += "\nYou will need to enter the number of the column you want to place your token"
+    message += "\nIf your answer is unacceptable a token will be placed in the first slot"
+    message += "\nYou will take in turns with black going first"
+    puts message
+  end
+
+  def get_input(message)
+    puts message
+    gets.chomp
+  end
+
+  def write_message(message)
+    puts message
+  end
+end
+
 
 
 class OutOfBoundsError < StandardError
@@ -112,3 +171,5 @@ end
 class GameOver < StandardError
 end
 
+controller = Controller.new
+controller.main
