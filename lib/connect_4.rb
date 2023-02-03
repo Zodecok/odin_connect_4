@@ -4,13 +4,13 @@ require 'json'
 
 class ConnectFour
   attr_reader :board, :last_move
-  BASE_VALUE = :_
+  BASE_VALUE = "_"
   MAX_ROUNDS = 42
   WIDTH = 7
   HEIGHT = 6
   NUM_TO_WIN = 4
-  PLAYER_ONE_TOKEN = :"\u26AB"
-  PLAYER_TWO_TOKEN = :"\u26AA"
+  PLAYER_ONE_TOKEN = "\u26AB"
+  PLAYER_TWO_TOKEN = "\u26AA"
   # board goes row then column for indexing
 
   def initialize(board = Array.new(HEIGHT) { Array.new(WIDTH, BASE_VALUE) }, last_move = nil)
@@ -42,7 +42,7 @@ class ConnectFour
   end
 
   def reset
-    @board = Array.new(6) { Array.new(7, :_) }
+    @board = Array.new(6) { Array.new(7, BASE_VALUE) }
   end
 
   private
@@ -138,7 +138,6 @@ class Controller
           self.save(connect_4, display)
           exit
         end
-        binding.pry
         column = input.to_i
         begin
           connect_4.turn(column)
