@@ -1,7 +1,9 @@
 require 'pry-byebug'
+require 'msgpack'
+require 'json'
 
 class ConnectFour
-  attr_reader :board
+  attr_reader :board, :last_move
   BASE_VALUE = :_
   MAX_ROUNDS = 42
   WIDTH = 7
@@ -11,7 +13,7 @@ class ConnectFour
   PLAYER_TWO_TOKEN = :"\u26AA"
   # board goes row then column for indexing
 
-  def initialize(board = Array.new(6) { Array.new(7, :_) }, last_move = nil)
+  def initialize(board = Array.new(HEIGHT) { Array.new(WIDTH, BASE_VALUE) }, last_move = nil)
     @board = board
     @last_move = last_move
   end
@@ -109,23 +111,69 @@ class Controller
     display = Display.new
     display.greeting
 
+    connect_4 = to_load(connect_4, display)
+
+    self.running_turns(connect_4, display)
+
+    winner_token = connect_4.winner
+    display.write_message("The winner was #{winner_token.to_s}")
+    self.main if display.get_input("Press 'y' to play again") == 'y'
+  end
+  
+  def to_load(connect_4, display)
+    input = display.get_input("If you want to load a saved file, press 'l', otherwise press anything else")
+    return connect_4 unless input == 'l'
+    save_number = display.get_input("What was the number of the save?")
+    filepath = "./lib/saves/connect_4_save_#{save_number}.json"
+    return self.loader(connect_4, display, filepath)
+  end
+
+  def running_turns(connect_4, display)
     game_over_error_raised = false
     until game_over_error_raised
       begin
         display.write_board(connect_4.board)
-        column = display.get_input("Enter column for go").to_i
-        connect_4.turn(column)
+        input = display.get_input("Enter column for go")
+        if input == 'q'
+          self.save(connect_4, display)
+          exit
+        end
+        binding.pry
+        column = input.to_i
+        begin
+          connect_4.turn(column)
+        rescue OutOfBoundsError => exception
+          display.write_message("\n\nThis number is out of bounds")
+          next
+        end
       rescue GameOver => exception
         display.write_board(connect_4.board)
         game_over_error_raised = true
       end
     end
-
-    winner_token = connect_4.winner
-    display.write_message("The winner was #{winner_token.to_s}")
-    self.main if display.get_input("Press 'y' to play again") == 'y'
-
   end
+
+  def save(connect_4, display)
+    save_number = display.get_input("You have chosen to save, press a number for the number of the save you want").to_i
+    content = JSON.dump ({
+      :board => connect_4.board,
+      :last_move => connect_4.last_move
+    })
+    File.open("./lib/saves/connect_4_save_#{save_number}.json", "w") { |file| file.puts content }
+  end
+
+  def loader(connect_4, display, filepath)
+    begin
+      raise NoFileError.new unless File.exist?(filepath)
+      data = JSON.load(File.read(filepath))
+      return ConnectFour.new(data['board'], data['last_move'])
+    rescue NoFileError => exception
+      display.write_message("This is not a save")
+      return to_load(connect_4, display)
+    end
+  end
+
+
 
 end
 
@@ -169,6 +217,9 @@ class OutOfBoundsError < StandardError
 end
 
 class GameOver < StandardError
+end
+
+class NoFileError < StandardError
 end
 
 controller = Controller.new
